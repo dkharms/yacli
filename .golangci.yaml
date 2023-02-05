@@ -1,0 +1,6 @@
+run:
+  concurrency: 1
+  skip-dirs:
+    - bin
+output:
+  format: github-actions

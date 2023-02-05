@@ -1,7 +1,1 @@
-cli is powerful tool for creating Command Line Interfaces.
-
----
-
-## Overview
-
-`TODO`
+`cli` is powerful tool for creating Command Line Interfaces.
