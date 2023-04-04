@@ -64,6 +64,13 @@ func TestParser_long(t *testing.T) {
 			flags:  []string{"--", "ikey=ivalue"},
 			hasErr: true,
 		},
+		{
+			name:  "--akey --bkey bvalue",
+			flags: []string{"--akey", "--bkey", "value"},
+			expected: repository{
+				mf: map[string]string{"akey": "", "bkey": "value"},
+			},
+		},
 	}
 
 	for _, tt := range testCase {
