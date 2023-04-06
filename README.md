@@ -1,3 +1,4 @@
+![GitHub](https://img.shields.io/github/license/dkharms/yacli)
 ![Go Report Card](https://goreportcard.com/badge/github.com/dkharms/yacli)
 ![Test Workflow](https://github.com/dkharms/yacli/actions/workflows/test.yml/badge.svg)
 
