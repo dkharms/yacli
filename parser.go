@@ -66,7 +66,7 @@ func (p *parser) parse() (repository, error) {
 			}
 
 			targ := strings.TrimPrefix(arg, "--")
-			if len(arg) == 0 {
+			if len(targ) == 0 {
 				return repository{}, fmt.Errorf("invalid flag: '%s'", arg)
 			}
 
