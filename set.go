@@ -68,25 +68,25 @@ func (a argset) get(name string) *argument {
 }
 
 // Integer returns the value of the argument with the given name as an int.
-// Panics if the argument was not found.
+// Panics if the argument was not found or have different type.
 func (as argset) Integer(name string) int {
 	return as.get(name).value.(int)
 }
 
 // Float returns the value of the argument with the given name as an float32.
-// Panics if the argument was not found.
+// Panics if the argument was not found or have different type.
 func (as argset) Float(name string) float32 {
 	return as.get(name).value.(float32)
 }
 
 // String returns the value of the argument with the given name as an string.
-// Panics if the argument was not found.
+// Panics if the argument was not found or have different type.
 func (as argset) String(name string) string {
 	return as.get(name).value.(string)
 }
 
 // Bool returns the value of the argument with the given name as an bool.
-// Panics if the argument was not found.
+// Panics if the argument was not found or have different type.
 func (as argset) Bool(name string) bool {
 	return as.get(name).value.(bool)
 }
