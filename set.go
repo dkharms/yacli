@@ -23,8 +23,8 @@ func (fs flagset) get(name string) (*flag, bool) {
 
 // Integer retrieves the value of an integer flag.
 // If the flag is not found, the second return value is false.
-func (fs flagset) Integer(name string) (int, bool) {
-	v, ok := fs[name].value.(int)
+func (fs flagset) Integer(name string) (int64, bool) {
+	v, ok := fs[name].value.(int64)
 	return v, ok
 }
 
@@ -69,8 +69,8 @@ func (a argset) get(name string) *argument {
 
 // Integer returns the value of the argument with the given name as an int.
 // Panics if the argument was not found or have different type.
-func (as argset) Integer(name string) int {
-	return as.get(name).value.(int)
+func (as argset) Integer(name string) int64 {
+	return as.get(name).value.(int64)
 }
 
 // Float returns the value of the argument with the given name as an float32.
