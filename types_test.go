@@ -7,10 +7,10 @@ import (
 
 func TestValidateInteger(t *testing.T) {
 	tests := []struct {
-		name    string
-		v       any
-		want    interface{}
-		wantErr bool
+		name   string
+		v      any
+		want   any
+		hasErr bool
 	}{
 		{"valid positive int", "123", int(123), false},
 		{"valid negative int", "-123", int(-123), false},
@@ -48,10 +48,10 @@ func TestValidateInteger(t *testing.T) {
 				got, err = validateInteger[int64](tt.v)
 			}
 
-			if (err != nil) != tt.wantErr {
+			if (err != nil) != tt.hasErr {
 				t.Errorf(
 					"validateInteger('%v')=%v, error= %v, wantErr=%v",
-					tt.v, got, err, tt.wantErr,
+					tt.v, got, err, tt.hasErr,
 				)
 				return
 			}
@@ -65,10 +65,10 @@ func TestValidateInteger(t *testing.T) {
 
 func TestValidateFloat(t *testing.T) {
 	tests := []struct {
-		name    string
-		v       any
-		want    interface{}
-		wantErr bool
+		name   string
+		v      any
+		want   any
+		hasErr bool
 	}{
 		{"valid positive float32", "123.45", float32(123.45), false},
 		{"valid negative float32", "-123.45", float32(-123.45), false},
@@ -91,10 +91,10 @@ func TestValidateFloat(t *testing.T) {
 				got, err = validateFloat[float64](tt.v)
 			}
 
-			if (err != nil) != tt.wantErr {
+			if (err != nil) != tt.hasErr {
 				t.Errorf(
 					"validateFloat('%v')=%v error=%v, wantErr %v",
-					tt.v, got, err, tt.wantErr,
+					tt.v, got, err, tt.hasErr,
 				)
 				return
 			}
