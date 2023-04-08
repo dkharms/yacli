@@ -3,11 +3,9 @@
 </p>
 
 <div align="center">
-
   <a href="">![GitHub](https://img.shields.io/github/license/dkharms/yacli)</a>
   <a href="">![Go Report Card](https://goreportcard.com/badge/github.com/dkharms/yacli)</a>
   <a href="">![Test Workflow](https://github.com/dkharms/yacli/actions/workflows/test.yml/badge.svg)</a>
-
 </div>
 
 ### About
@@ -18,3 +16,46 @@ With `yacli`, you can quickly build interactive `CLI` applications that are easy
 `yacli` comes with a simple and intuitive `API` that makes it easy to define commands, flags, and arguments for your `CLI`.
 You can create subcommands, and define flags with short and long names.
 `yacli` also supports various types of flags, such as boolean, string, integer, and provides built-in support for input validation and error handling.
+
+
+### How To Start
+
+
+#### Install `yacli`
+
+The first step is to install yacli on your system. You can do this by running the following command:
+```bash
+$ go get github.com/dkharms/yacli
+```
+
+#### Define your `CLI` commands
+
+```go
+var root = yacli.NewRootCommand(
+	yacli.WithCommandDescription("Just prints <message> in format you specified"),
+	yacli.WithMutualExclusiveFlags(
+		yacli.NewFlag("uppercase", "u", "Print <message> in uppercase", yacli.Bool),
+		yacli.NewFlag("lowercase", "l", "Print <message> in lowercase", yacli.Bool),
+	),
+	yacli.WithAguments(
+		yacli.NewArgument("message", "Message to print", yacli.String),
+		yacli.NewArgument("amount", "Print <message> `n` times", yacli.Integer),
+	),
+	yacli.WithAction(echo),
+)
+
+func echo(ctx yacli.Context) error { … }
+```
+
+#### Build and run your `CLI` application
+
+Once you have defined your CLI commands, you can build and run your application using the following commands:
+
+```bash
+$ go build
+$ ./cli --lowercase true "Hello, world!"
+```
+
+### What's Next
+
+Checkout [docs](https://pkg.go.dev/github.com/dkharms/yacli) or [examples](https://pkg.go.dev/github.com/dkharms/yacli/examples).
