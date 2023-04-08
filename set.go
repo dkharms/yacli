@@ -132,14 +132,44 @@ func (a argset) get(name string) *argument {
 
 // Integer returns the value of the argument with the given name as an int.
 // Panics if the argument was not found or have different type.
-func (as argset) Integer(name string) int64 {
+func (as argset) Integer(name string) int {
+	return as.get(name).value.(int)
+}
+
+// Integer8 returns the value of the argument with the given name as an int8.
+// Panics if the argument was not found or have different type.
+func (as argset) Integer8(name string) int8 {
+	return as.get(name).value.(int8)
+}
+
+// Integer16 returns the value of the argument with the given name as an int16.
+// Panics if the argument was not found or have different type.
+func (as argset) Integer16(name string) int16 {
+	return as.get(name).value.(int16)
+}
+
+// Integer32 returns the value of the argument with the given name as an int32.
+// Panics if the argument was not found or have different type.
+func (as argset) Integer32(name string) int32 {
+	return as.get(name).value.(int32)
+}
+
+// Integer64 returns the value of the argument with the given name as an int64.
+// Panics if the argument was not found or have different type.
+func (as argset) Integer64(name string) int64 {
 	return as.get(name).value.(int64)
 }
 
-// Float returns the value of the argument with the given name as an float32.
+// Float32 returns the value of the argument with the given name as an float32.
 // Panics if the argument was not found or have different type.
-func (as argset) Float(name string) float32 {
+func (as argset) Float32(name string) float32 {
 	return as.get(name).value.(float32)
+}
+
+// Float64 returns the value of the argument with the given name as an float64.
+// Panics if the argument was not found or have different type.
+func (as argset) Float64(name string) float64 {
+	return as.get(name).value.(float64)
 }
 
 // String returns the value of the argument with the given name as an string.
