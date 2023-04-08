@@ -22,7 +22,7 @@ var root = yacli.NewRootCommand(
 )
 
 func echo(ctx yacli.Context) error {
-	n := int(ctx.Arguments().Integer("amount"))
+	n := ctx.Arguments().Integer("amount")
 	message := ctx.Arguments().String("message")
 
 	if v, isSet := ctx.Flags().Bool("uppercase"); isSet && v {
