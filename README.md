@@ -60,4 +60,4 @@ $ ./cli --lowercase true "Hello, world!"
 
 ### What's Next
 
-Checkout [docs](https://pkg.go.dev/github.com/dkharms/yacli) or [examples](https://pkg.go.dev/github.com/dkharms/yacli/examples).
+Checkout [docs](https://pkg.go.dev/github.com/dkharms/yacli) or [examples](https://github.com/dkharms/yacli/examples).
