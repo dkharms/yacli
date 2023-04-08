@@ -10,4 +10,11 @@
 
 </div>
 
-## `yacli` is powerful tool for creating Command Line Interfaces.
+### About
+
+`yacli` is an open source command line tool written in `GoLang` that allows developers to easily create powerful and customizable command line interfaces (`CLIs`) for their applications.
+With `yacli`, you can quickly build interactive `CLI` applications that are easy to use and provide a rich user experience.
+
+`yacli` comes with a simple and intuitive `API` that makes it easy to define commands, flags, and arguments for your `CLI`.
+You can create subcommands, and define flags with short and long names.
+`yacli` also supports various types of flags, such as boolean, string, integer, and provides built-in support for input validation and error handling.
