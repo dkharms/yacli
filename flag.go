@@ -35,6 +35,12 @@ func NewFlag(name, short, description string, ttype ytype, opts ...flagOption) *
 	return f
 }
 
+func WithFlagDeprecated(d bool) flagOption {
+	return func(f *flag) {
+		f.deprecated = d
+	}
+}
+
 func WithFlagValidator(v func(Flag) error) flagOption {
 	return func(f *flag) {
 		f.cvalidators = append(f.cvalidators, v)
