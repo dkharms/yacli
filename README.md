@@ -3,9 +3,11 @@
 </p>
 
 <div align="center">
+
   <a href="">![GitHub](https://img.shields.io/github/license/dkharms/yacli)</a>
   <a href="">![Go Report Card](https://goreportcard.com/badge/github.com/dkharms/yacli)</a>
   <a href="">![Test Workflow](https://github.com/dkharms/yacli/actions/workflows/test.yml/badge.svg)</a>
+
 </div>
 
 ### About
@@ -21,14 +23,14 @@ You can create subcommands, and define flags with short and long names.
 ### How To Start
 
 
-#### Install `yacli`
+#### 1. Install `yacli`
 
 The first step is to install yacli on your system. You can do this by running the following command:
 ```bash
 $ go get github.com/dkharms/yacli
 ```
 
-#### Define your `CLI` commands
+#### 2. Define your `CLI` commands
 
 ```go
 var root = yacli.NewRootCommand(
@@ -47,7 +49,7 @@ var root = yacli.NewRootCommand(
 func echo(ctx yacli.Context) error { … }
 ```
 
-#### Build and run your `CLI` application
+#### 3. Build and run your `CLI` application
 
 Once you have defined your CLI commands, you can build and run your application using the following commands:
 
