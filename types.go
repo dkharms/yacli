@@ -1,12 +1,22 @@
 package yacli
 
-import "strconv"
+import (
+	"reflect"
+	"strconv"
+
+	"golang.org/x/exp/constraints"
+)
 
 type ytype int
 
 const (
 	Integer ytype = iota
-	Float
+	Integer8
+	Integer16
+	Integer32
+	Integer64
+	Float32
+	Float64
 	String
 	Bool
 )
@@ -14,8 +24,38 @@ const (
 type vfunc func(v any) (any, error)
 
 var vfuncs map[ytype]vfunc = map[ytype]vfunc{
-	Integer: func(v any) (any, error) { return strconv.ParseInt(v.(string), 10, 32) },
-	Float:   func(v any) (any, error) { return strconv.ParseFloat(v.(string), 32) },
-	String:  func(v any) (any, error) { return v.(string), nil },
-	Bool:    func(v any) (any, error) { return strconv.ParseBool(v.(string)) },
+	Integer:   func(v any) (any, error) { return validateInteger[int](v) },
+	Integer8:  func(v any) (any, error) { return validateInteger[int8](v) },
+	Integer16: func(v any) (any, error) { return validateInteger[int16](v) },
+	Integer32: func(v any) (any, error) { return validateInteger[int32](v) },
+	Integer64: func(v any) (any, error) { return validateInteger[int64](v) },
+	Float32:   func(v any) (any, error) { return validateFloat[float32](v) },
+	Float64:   func(v any) (any, error) { return validateFloat[float64](v) },
+	String:    func(v any) (any, error) { return v.(string), nil },
+	Bool:      func(v any) (any, error) { return validateBool(v) },
+}
+
+func validateInteger[T constraints.Integer](v any) (T, error) {
+	var t T
+	i, err := strconv.ParseInt(v.(string), 10, reflect.TypeOf(t).Bits())
+	if err != nil {
+		return t, err
+	}
+	return T(i), err
+}
+
+func validateFloat[T constraints.Float](v any) (T, error) {
+	var t T
+	i, err := strconv.ParseFloat(v.(string), reflect.TypeOf(t).Bits())
+	if err != nil {
+		return t, err
+	}
+	return T(i), err
+}
+
+func validateBool(v any) (bool, error) {
+	if v.(string) == "" {
+		return true, nil
+	}
+	return strconv.ParseBool(v.(string))
 }
