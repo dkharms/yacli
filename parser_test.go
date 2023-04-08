@@ -16,42 +16,42 @@ func TestParser_long(t *testing.T) {
 			name:  "--key value",
 			flags: []string{"--key", "value"},
 			expected: repository{
-				flagSet: map[string]string{"key": "value"},
+				flagSet: map[string]entry{"key": {"value", true}},
 			},
 		},
 		{
 			name:  "--key=value",
 			flags: []string{"--key=value"},
 			expected: repository{
-				flagSet: map[string]string{"key": "value"},
+				flagSet: map[string]entry{"key": {"value", true}},
 			},
 		},
 		{
 			name:  "--key='value'",
 			flags: []string{"--key='value'"},
 			expected: repository{
-				flagSet: map[string]string{"key": "'value'"},
+				flagSet: map[string]entry{"key": {"'value'", true}},
 			},
 		},
 		{
 			name:  "--key=",
 			flags: []string{"--key="},
 			expected: repository{
-				flagSet: map[string]string{"key": ""},
+				flagSet: map[string]entry{"key": {"", true}},
 			},
 		},
 		{
 			name:  "--key ikey=ivalue",
 			flags: []string{"--key", "ikey=ivalue"},
 			expected: repository{
-				flagSet: map[string]string{"key": "ikey=ivalue"},
+				flagSet: map[string]entry{"key": {"ikey=ivalue", true}},
 			},
 		},
 		{
 			name:  "--key=ikey=ivalue",
 			flags: []string{"--key=ikey=ivalue"},
 			expected: repository{
-				flagSet: map[string]string{"key": "ikey=ivalue"},
+				flagSet: map[string]entry{"key": {"ikey=ivalue", true}},
 			},
 		},
 		{
@@ -68,7 +68,7 @@ func TestParser_long(t *testing.T) {
 			name:  "--akey --bkey bvalue",
 			flags: []string{"--akey", "--bkey", "value"},
 			expected: repository{
-				flagSet: map[string]string{"akey": "", "bkey": "value"},
+				flagSet: map[string]entry{"akey": {"", true}, "bkey": {"value", true}},
 			},
 		},
 	}
@@ -101,35 +101,35 @@ func TestParser_short(t *testing.T) {
 			name:  "-k value",
 			flags: []string{"-k", "value"},
 			expected: repository{
-				flagSet: map[string]string{"k": "value"},
+				flagSet: map[string]entry{"k": {"value", false}},
 			},
 		},
 		{
 			name:  "-abc",
 			flags: []string{"-abc"},
 			expected: repository{
-				flagSet: map[string]string{"a": "", "b": "", "c": ""},
+				flagSet: map[string]entry{"a": {"", false}, "b": {"", false}, "c": {"", false}},
 			},
 		},
 		{
 			name:  "-a -b -c",
 			flags: []string{"-a", "-b", "-c"},
 			expected: repository{
-				flagSet: map[string]string{"a": "", "b": "", "c": ""},
+				flagSet: map[string]entry{"a": {"", false}, "b": {"", false}, "c": {"", false}},
 			},
 		},
 		{
 			name:  "-a -b -c value",
 			flags: []string{"-a", "-b", "-c", "value"},
 			expected: repository{
-				flagSet: map[string]string{"a": "", "b": "", "c": "value"},
+				flagSet: map[string]entry{"a": {"", false}, "b": {"", false}, "c": {"value", false}},
 			},
 		},
 		{
 			name:  "-a value",
 			flags: []string{"-a", "-b", "-c", "value"},
 			expected: repository{
-				flagSet: map[string]string{"a": "", "b": "", "c": "value"},
+				flagSet: map[string]entry{"a": {"", false}, "b": {"", false}, "c": {"value", false}},
 			},
 		},
 	}
@@ -163,7 +163,7 @@ func TestParser_mixed(t *testing.T) {
 			args: []string{"command", "subcommand", "argument"},
 			expected: repository{
 				beforeFlags:    []string{"command", "subcommand", "argument"},
-				flagSet:        map[string]string{},
+				flagSet:        map[string]entry{},
 				positionalArgs: []string{},
 			},
 		},
@@ -172,7 +172,7 @@ func TestParser_mixed(t *testing.T) {
 			args: []string{"command", "subcommand", "--flag", "flag-value", "argument"},
 			expected: repository{
 				beforeFlags:    []string{"command", "subcommand"},
-				flagSet:        map[string]string{"flag": "flag-value"},
+				flagSet:        map[string]entry{"flag": {"flag-value", true}},
 				positionalArgs: []string{"argument"},
 			},
 		},
@@ -181,7 +181,7 @@ func TestParser_mixed(t *testing.T) {
 			args: []string{"command", "subcommand", "--flag", "flag-value", "--another-flag=argument"},
 			expected: repository{
 				beforeFlags:    []string{"command", "subcommand"},
-				flagSet:        map[string]string{"flag": "flag-value", "another-flag": "argument"},
+				flagSet:        map[string]entry{"flag": {"flag-value", true}, "another-flag": {"argument", true}},
 				positionalArgs: []string{},
 			},
 		},
