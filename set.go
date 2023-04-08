@@ -23,29 +23,92 @@ func (fs flagset) get(name string) (*flag, bool) {
 
 // Integer retrieves the value of an integer flag.
 // If the flag is not found, the second return value is false.
-func (fs flagset) Integer(name string) (int64, bool) {
-	v, ok := fs[name].value.(int64)
+func (fs flagset) Integer(name string) (int, bool) {
+	f, ok := fs.get(name)
+	if !ok {
+		return 0, false
+	}
+	v, ok := f.value.(int)
 	return v, ok
 }
 
-// Float retrieves the value of a float flag.
+func (fs flagset) Integer8(name string) (int8, bool) {
+	f, ok := fs.get(name)
+	if !ok {
+		return 0, false
+	}
+	v, ok := f.value.(int8)
+	return v, ok
+}
+
+func (fs flagset) Integer16(name string) (int16, bool) {
+	f, ok := fs.get(name)
+	if !ok {
+		return 0, false
+	}
+	v, ok := f.value.(int16)
+	return v, ok
+}
+
+func (fs flagset) Integer32(name string) (int32, bool) {
+	f, ok := fs.get(name)
+	if !ok {
+		return 0, false
+	}
+	v, ok := f.value.(int32)
+	return v, ok
+}
+
+func (fs flagset) Integer64(name string) (int64, bool) {
+	f, ok := fs.get(name)
+	if !ok {
+		return 0, false
+	}
+	v, ok := f.value.(int64)
+	return v, ok
+}
+
+// Float32 retrieves the value of a float32 flag.
 // If the flag is not found, the second return value is false.
-func (fs flagset) Float(name string) (float32, bool) {
-	v, ok := fs[name].value.(float32)
+func (fs flagset) Float32(name string) (float32, bool) {
+	f, ok := fs.get(name)
+	if !ok {
+		return 0, false
+	}
+	v, ok := f.value.(float32)
+	return v, ok
+}
+
+// Float64 retrieves the value of a float64 flag.
+// If the flag is not found, the second return value is false.
+func (fs flagset) Float64(name string) (float64, bool) {
+	f, ok := fs.get(name)
+	if !ok {
+		return 0, false
+	}
+	v, ok := f.value.(float64)
 	return v, ok
 }
 
 // String retrieves the value of a string flag.
 // If the flag is not found, the second return value is false.
 func (fs flagset) String(name string) (string, bool) {
-	v, ok := fs[name].value.(string)
+	f, ok := fs.get(name)
+	if !ok {
+		return "", false
+	}
+	v, ok := f.value.(string)
 	return v, ok
 }
 
 // Bool retrieves the value of a boolean flag.
 // If the flag is not found, the second return value is false.
 func (fs flagset) Bool(name string) (bool, bool) {
-	v, ok := fs[name].value.(bool)
+	f, ok := fs.get(name)
+	if !ok {
+		return false, false
+	}
+	v, ok := f.value.(bool)
 	return v, ok
 }
 
