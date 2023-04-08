@@ -5,6 +5,11 @@ import (
 	"strings"
 )
 
+type entry struct {
+	value  any
+	isLong bool
+}
+
 // repository is a struct that represents a collection of arguments passed to CLI tool.
 // It contains the positional arguments and flags provided by the user.
 type repository struct {
@@ -15,7 +20,7 @@ type repository struct {
 	// A map that contains the flags and their values.
 	// The keys represent the flag names, and the values represent their values.
 	// Flags are the arguments that start with a dash (-) or double-dash (--).
-	flagSet map[string]string
+	flagSet map[string]entry
 
 	// A slice of strings representing the positional arguments.
 	// These are the arguments that are not flags, and their order matters.
@@ -51,7 +56,7 @@ func (p *parser) parse() (repository, error) {
 
 	r := repository{
 		beforeFlags:    beforeFlags,
-		flagSet:        make(map[string]string),
+		flagSet:        make(map[string]entry),
 		positionalArgs: []string{},
 	}
 
@@ -62,7 +67,7 @@ func (p *parser) parse() (repository, error) {
 		switch {
 		case isLongFlag(arg):
 			if p.parsedFlags {
-				return repository{}, fmt.Errorf("already parsed flags: invalid argument '%s'", arg)
+				return repository{}, fmt.Errorf("already parsed flags: invalid flag '%s'", arg)
 			}
 
 			targ := strings.TrimPrefix(arg, "--")
@@ -85,10 +90,10 @@ func (p *parser) parse() (repository, error) {
 				i++
 			}
 
-			r.flagSet[name] = value
+			r.flagSet[name] = entry{value, true}
 		case isShortFlag(arg):
 			if p.parsedFlags {
-				return repository{}, fmt.Errorf("already parsed flags: invalid argument '%s'", arg)
+				return repository{}, fmt.Errorf("already parsed flags: invalid flag '%s'", arg)
 			}
 
 			targ := strings.TrimPrefix(arg, "-")
@@ -98,13 +103,13 @@ func (p *parser) parse() (repository, error) {
 
 			if len(targ) > 1 {
 				for _, l := range targ {
-					r.flagSet[string(l)] = ""
+					r.flagSet[string(l)] = entry{"", false}
 				}
 			} else if i+1 < len(p.osargs) && !(isShortFlag(p.osargs[i+1]) || isLongFlag(p.osargs[i+1])) {
-				r.flagSet[targ] = p.osargs[i+1]
+				r.flagSet[targ] = entry{p.osargs[i+1], false}
 				i++
 			} else {
-				r.flagSet[targ] = ""
+				r.flagSet[targ] = entry{"", false}
 			}
 		default:
 			r.positionalArgs = append(r.positionalArgs, arg)
