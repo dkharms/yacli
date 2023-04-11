@@ -9,6 +9,21 @@ import (
 
 type ytype int
 
+func (y ytype) String() string {
+	switch y {
+	case Integer, Integer8, Integer16, Integer32, Integer64:
+		return "INTEGER"
+	case Float32, Float64:
+		return "FLOAT"
+	case String:
+		return "STRING"
+	case Bool:
+		return "BOOL"
+	default:
+		return "UNKNOWN"
+	}
+}
+
 const (
 	Integer ytype = iota
 	Integer8
