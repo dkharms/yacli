@@ -14,9 +14,13 @@ type Argument interface {
 
 	// Type returns the type of the argument.
 	Type() ytype
+
+	Description() string
+
+	Optional() bool
 }
 
-var _ (Argument) = (*argument)(nil)
+var _ Argument = (*argument)(nil)
 
 // argument represents a command-line argument with a name, description,
 // type, value, and custom validators.
@@ -25,6 +29,7 @@ type argument struct {
 	description string
 	ttype       ytype
 	value       any
+	optional    bool
 	cvalidators []func(Argument) error
 }
 
@@ -44,6 +49,12 @@ func NewArgument(
 	}
 
 	return a
+}
+
+func WithArgumentOptional(optional bool) argumentOption {
+	return func(a *argument) {
+		a.optional = optional
+	}
 }
 
 // WithArgumentValidator is an argumentOption function that allows adding custom validators to an argument.
@@ -68,6 +79,18 @@ func (a *argument) Type() ytype {
 // Value returns the value of the argument.
 func (a *argument) Value() any {
 	return a.value
+}
+
+func (a *argument) Description() string {
+	return a.description
+}
+
+func (a *argument) Optional() bool {
+	return a.optional
+}
+
+func (a *argument) String() string {
+	return fmt.Sprintf("%s %s", a.Name(), a.Type())
 }
 
 // validate validates the argument value against its type and custom validators.
