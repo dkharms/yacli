@@ -15,23 +15,25 @@ var (
 	formatBold = func(msg string) string { return fmt.Sprintf("\033[1m%s\033[0m", msg) }
 )
 
-var helpTemplateRaw = `{{ .Usage }}
+var helpTemplateRaw = `{{ if .Deprecated }}[{{ FormatRed "DEPRECATED" }}] {{ end }}{{ .Usage }}
 {{ .Description }}
 
 Flags:
 {{- range .Flags }}
-    {{ printf "-%s" .Short | FormatBold }} | {{printf "--%s" .Name | FormatBold }} [{{ printf "%s" .Type | FormatBlue }}] - {{ .Description }} 
+    {{ if .Deprecated }}[{{ FormatRed "DEPRECATED" }}] {{ end }}{{ printf "-%s" .Short | FormatBold }} | {{printf "--%s" .Name | FormatBold }} [{{ printf "%s" .Type | FormatBlue }}] - {{ .Description }} 
 {{- end }}
 {{- if gt (len .Arguments) 0 }} 
+
 Arguments:
 {{- range .Arguments }}
     {{ if not .Optional}}{{ FormatBold "*" | FormatRed }}{{end}} {{ FormatBold .Name }} [{{ printf "%s" .Type | FormatBlue }}] - {{ .Description }} 
 {{- end }}
 {{- end }}
 {{- if gt (len .Subcommands) 0 }}
+
 Subcommands:
 {{- range .Subcommands }}
-    {{ FormatBold .Name }} - {{ .Description }}
+    {{ FormatBold .Name }} - {{ .Description }} {{ if .Deprecated }}[{{ FormatRed "DEPRECATED" }}]{{ end }}
 {{- end }}
 {{- end }}
 `
