@@ -1,5 +1,28 @@
 package yacli
 
+// commandset is a set of commands mapped by their name.
+type commandset map[string]*command
+
+// set is a method of the commandset struct that takes two arguments:
+// a string representing the name of the command to add, and a pointer to a command struct.
+// It returns a boolean value indicating whether the command was successfully added to the command set.
+// If a command with the same name already exists in the command set, the function will return false.
+func (cs commandset) set(name string, c *command) bool {
+	if _, ok := cs[name]; ok {
+		return false
+	}
+	cs[name] = c
+	return true
+}
+
+// get returns the command associated with the given name and a bool indicating
+// whether the command was found or not. Returns nil and false if the command is
+// not present in the command set.
+func (cs commandset) get(name string) (*command, bool) {
+	c, ok := cs[name]
+	return c, ok
+}
+
 // flagset is a map of string flag names to pointers to flag objects.
 // It is used to store and retrieve flag values by name.
 type flagset map[string]*flag
@@ -116,13 +139,13 @@ func (fs flagset) Bool(name string) (bool, bool) {
 type argset []*argument
 
 // add adds an argument to the argset.
-func (a argset) add(arg *argument) {
-	a = append(a, arg)
+func (as argset) add(arg *argument) {
+	as = append(as, arg)
 }
 
 // get returns the argument with the given name, if it exists in the argset.
-func (a argset) get(name string) *argument {
-	for _, arg := range a {
+func (as argset) get(name string) *argument {
+	for _, arg := range as {
 		if name == arg.name {
 			return arg
 		}

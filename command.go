@@ -8,28 +8,18 @@ import (
 
 type commandOption func(*command)
 
-// commandset is a set of commands mapped by their name.
-type commandset map[string]*command
-
-// set is a method of the commandset struct that takes two arguments:
-// a string representing the name of the command to add, and a pointer to a command struct.
-// It returns a boolean value indicating whether the command was successfully added to the command set.
-// If a command with the same name already exists in the command set, the function will return false.
-func (cs commandset) set(name string, c *command) bool {
-	if _, ok := cs[name]; ok {
-		return false
-	}
-	cs[name] = c
-	return true
+type Command interface {
+	Name() string
+	Description() string
+	Deprecated() bool
+	Subcommands() []Command
+	Flags() []Flag
+	Arguments() []Argument
+	Usage() string
+	Help() string
 }
 
-// get returns the command associated with the given name and a bool indicating
-// whether the command was found or not. Returns nil and false if the command is
-// not present in the command set.
-func (cs commandset) get(name string) (*command, bool) {
-	c, ok := cs[name]
-	return c, ok
-}
+var _ Command = (*command)(nil)
 
 // command represents a command definition which has a name,
 // a description, flags, arguments, and an action.
@@ -37,8 +27,8 @@ type command struct {
 	// name is the name of the command.
 	name string
 
-	// desc is a brief description of the command.
-	desc string
+	// description is a brief description of the command.
+	description string
 
 	// deprecated is a flag that indicates if the command is deprecated or not
 	deprecated bool
@@ -50,6 +40,8 @@ type command struct {
 	fsl flagset
 
 	fss flagset
+
+	fg flaggroup
 
 	// as is the arguments associated with this command.
 	as argset
@@ -71,8 +63,14 @@ func NewRootCommand(opts ...commandOption) *command {
 // It then applies the given options to the command.
 // Returns a pointer to the created command.
 func NewCommand(name string, opts ...commandOption) *command {
+	hFlag := &flag{name: "help", short: "h", description: "Print this message", ttype: Bool}
+
 	c := &command{
-		name: name, fsl: make(flagset), fss: make(flagset), cs: make(commandset),
+		name: name,
+		fsl:  flagset{"help": hFlag},
+		fss:  flagset{"h": hFlag},
+		fg:   make(flaggroup),
+		cs:   make(commandset),
 	}
 
 	for _, opt := range opts {
@@ -97,7 +95,7 @@ func WithSubcommand(subc *command) commandOption {
 // It should be a brief summary of what the command does.
 func WithCommandDescription(desc string) commandOption {
 	return func(c *command) {
-		c.desc = desc
+		c.description = desc
 	}
 }
 
@@ -113,28 +111,34 @@ func WithCommandDeprecated(d bool) commandOption {
 // If a flag with the same name already exists in the flagset, it will be replaced.
 func WithFlags(flags ...*flag) commandOption {
 	return func(c *command) {
+		g := c.fg.new(groupDefault)
 		for _, f := range flags {
 			c.fsl.set(f.name, f)
 			c.fss.set(f.short, f)
+			g.add(f)
 		}
 	}
 }
 
 func WithMutualExclusiveFlags(flags ...*flag) commandOption {
-	var cnt int
-	var metFlags []string
-
 	return func(c *command) {
+		g := c.fg.new(groupMutex)
 		for _, f := range flags {
 			c.fsl.set(f.name, f)
 			c.fss.set(f.short, f)
+			g.add(f)
 			f.cvalidators = append(f.cvalidators,
 				func(f Flag) error {
-					if cnt > 0 {
-						return fmt.Errorf("mutual exclusive flags: beside flags %s met '%s' flag", metFlags, f.Name())
+					g.met++
+					if g.met > 1 {
+						var names []string
+						for _, ff := range g.flags {
+							names = append(names, ff.Name())
+						}
+						return fmt.Errorf(
+							"mutual exclusive flags: beside flags %s met '%s' flag", flags, f.Name(),
+						)
 					}
-					metFlags = append(metFlags, f.Name())
-					cnt++
 					return nil
 				},
 			)
@@ -144,18 +148,15 @@ func WithMutualExclusiveFlags(flags ...*flag) commandOption {
 }
 
 func WithAlwaysTogetherFlags(flags ...*flag) commandOption {
-	var cnt int
 	return func(c *command) {
-		for i, f := range flags {
-			i := i
+		g := c.fg.new(groupTogether)
+		for _, f := range flags {
 			c.fsl.set(f.name, f)
 			c.fss.set(f.short, f)
+			g.add(f)
 			f.cvalidators = append(f.cvalidators,
-				func(f Flag) error {
-					if i != cnt {
-						return fmt.Errorf("together flags: met not all specified flag")
-					}
-					cnt++
+				func(_ Flag) error {
+					g.met++
 					return nil
 				},
 			)
@@ -176,6 +177,50 @@ func WithAction(f func(Context) error) commandOption {
 	return func(c *command) {
 		c.action = f
 	}
+}
+
+func (c *command) Name() string {
+	return c.name
+}
+
+func (c *command) Description() string {
+	return c.description
+}
+
+func (c *command) Deprecated() bool {
+	return c.deprecated
+}
+
+func (c *command) Subcommands() []Command {
+	var subcommands []Command
+	for _, subcommand := range c.cs {
+		subcommands = append(subcommands, subcommand)
+	}
+	return subcommands
+}
+
+func (c *command) Flags() []Flag {
+	var flags []Flag
+	for _, flag := range c.fsl {
+		flags = append(flags, flag)
+	}
+	return flags
+}
+
+func (c *command) Arguments() []Argument {
+	var arguments []Argument
+	for _, argument := range c.as {
+		arguments = append(arguments, argument)
+	}
+	return arguments
+}
+
+func (c *command) Help() string {
+	var s strings.Builder
+	if err := helpTemplate.Execute(&s, c); err != nil {
+		panic(err)
+	}
+	return s.String()
 }
 
 func (c *command) Run() error {
@@ -259,6 +304,18 @@ func (c *command) init(r repository) error {
 }
 
 func (c *command) validate() error {
+	for _, g := range c.fg {
+		if g.ttype == groupTogether && 0 < g.met && g.met < len(g.flags) {
+			var flags []string
+			for _, f := range g.flags {
+				flags = append(flags, f.Name())
+			}
+			return fmt.Errorf(
+				"invalid flags: you have to pass flags %s together", flags,
+			)
+		}
+	}
+
 	for _, f := range c.fsl {
 		if err := f.validate(); err != nil {
 			return err
@@ -279,6 +336,10 @@ func (c *command) run(r repository) error {
 		return err
 	}
 
+	if c.help() {
+		return nil
+	}
+
 	if err := c.validate(); err != nil {
 		return err
 	}
@@ -288,4 +349,12 @@ func (c *command) run(r repository) error {
 	}
 
 	return c.action(&context{fs: c.fsl, as: c.as})
+}
+
+func (c *command) help() bool {
+	if v, _ := c.fsl.get("help"); v.value != nil {
+		fmt.Print(c.Help())
+		return true
+	}
+	return false
 }
