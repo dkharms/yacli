@@ -1,14 +1,19 @@
 package yacli
 
+import "fmt"
+
 type flagOption func(*flag)
 
 type Flag interface {
 	Name() string
+	Short() string
 	Value() any
 	Type() ytype
+	Description() string
+	Deprecated() bool
 }
 
-var _ (Flag) = (*flag)(nil)
+var _ Flag = (*flag)(nil)
 
 type flag struct {
 	name        string
@@ -51,12 +56,28 @@ func (f *flag) Name() string {
 	return f.name
 }
 
+func (f *flag) Short() string {
+	return f.short
+}
+
 func (f *flag) Value() any {
 	return f.value
 }
 
 func (f *flag) Type() ytype {
 	return f.ttype
+}
+
+func (f *flag) Description() string {
+	return f.description
+}
+
+func (f *flag) Deprecated() bool {
+	return f.deprecated
+}
+
+func (f *flag) String() string {
+	return fmt.Sprintf("%s %s", f.Name(), f.Type())
 }
 
 func (f *flag) validate() error {
