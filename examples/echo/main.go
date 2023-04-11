@@ -14,7 +14,7 @@ var root = yacli.NewRootCommand(
 		yacli.NewFlag("uppercase", "u", "Print <message> in uppercase", yacli.Bool),
 		yacli.NewFlag("lowercase", "l", "Print <message> in lowercase", yacli.Bool),
 	),
-	yacli.WithAguments(
+	yacli.WithArguments(
 		yacli.NewArgument("message", "Message to print", yacli.String),
 		yacli.NewArgument("amount", "Print <message> `n` times", yacli.Integer),
 	),
