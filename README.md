@@ -21,9 +21,7 @@ With `yacli`, you can quickly build interactive `CLI` applications that are easy
 You can create subcommands, and define flags with short and long names.
 `yacli` also supports various types of flags, such as boolean, string, integer, and provides built-in support for input validation and error handling.
 
-
 ### How To Start
-
 
 #### 1. Install `yacli`
 
@@ -57,7 +55,9 @@ Once you have defined your CLI commands, you can build and run your application 
 
 ```bash
 $ go build
-$ ./cli --lowercase true "Hello, world!"
+$ ./echo --uppercase true "I love Computer Science" 2
+$ I LOVE COMPUTER SCIENCE
+$ I LOVE COMPUTER SCIENCE
 ```
 
 ### What's Next
