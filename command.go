@@ -165,7 +165,7 @@ func WithAlwaysTogetherFlags(flags ...*flag) commandOption {
 
 }
 
-func WithAguments(args ...*argument) commandOption {
+func WithArguments(args ...*argument) commandOption {
 	return func(c *command) {
 		for _, arg := range args {
 			c.as = append(c.as, arg)
@@ -304,21 +304,21 @@ func (c *command) init(r repository) error {
 }
 
 func (c *command) validate() error {
+	for _, f := range c.fsl {
+		if err := f.validate(); err != nil {
+			return err
+		}
+	}
+
 	for _, g := range c.fg {
 		if g.ttype == groupTogether && 0 < g.met && g.met < len(g.flags) {
 			var flags []string
 			for _, f := range g.flags {
-				flags = append(flags, f.Name())
+				flags = append(flags, f.name)
 			}
 			return fmt.Errorf(
 				"invalid flags: you have to pass flags %s together", flags,
 			)
-		}
-	}
-
-	for _, f := range c.fsl {
-		if err := f.validate(); err != nil {
-			return err
 		}
 	}
 
