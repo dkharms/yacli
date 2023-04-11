@@ -19,7 +19,36 @@ With `yacli`, you can quickly build interactive `CLI` applications that are easy
 
 `yacli` comes with a simple and intuitive `API` that makes it easy to define commands, flags, and arguments for your `CLI`.
 You can create subcommands, and define flags with short and long names.
-`yacli` also supports various types of flags, such as boolean, string, integer, and provides built-in support for input validation and error handling.
+`yacli` also supports various types of flags, such as boolean, string, integer, float and provides built-in support for input validation and error handling.
+
+### Features
+
+#### Aesthetics and Simplicity
+
+Commands do not require the use of global variables or `init()` function.
+Just declaratively describe your command and let `yacli` do the rest.
+
+#### Explicit Work With Flags and Arguments
+
+Validation comes by default - you can take a break from arguments and flags validation.
+
+#### Help Template
+
+Verbose help message is already shipped.
+
+```bash
+echo [ -u | -l ] message amount
+Just prints <message> in format you specified
+
+Flags:
+    -h | --help [BOOL] - Print this message
+    -u | --uppercase [BOOL] - Print <message> in uppercase
+    -l | --lowercase [BOOL] - Print <message> in lowercase
+
+Arguments:
+    * message [STRING] - Message to print
+    * amount [INTEGER] - Print <message> `n` times
+```
 
 ### How To Start
 
@@ -62,4 +91,4 @@ $ I LOVE COMPUTER SCIENCE
 
 ### What's Next
 
-Checkout [docs](https://pkg.go.dev/github.com/dkharms/yacli) or [examples](https://github.com/dkharms/yacli/examples).
+Checkout [docs](https://pkg.go.dev/github.com/dkharms/yacli) or [examples](https://github.com/dkharms/yacli/tree/main/examples).
