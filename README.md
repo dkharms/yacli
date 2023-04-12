@@ -36,7 +36,7 @@ Validation comes by default - you can take a break from arguments and flags val
 
 Verbose help message is already shipped.
 
-![Help Message](https://user-images.githubusercontent.com/29202384/231423462-2926f3af-3123-4c01-bdeb-5c1c1a792ece.png)
+![Help Message](https://user-images.githubusercontent.com/29202384/231445391-a40df181-0c13-4c9e-99b7-0bc23b615963.png)
 
 ### How To Start
 
