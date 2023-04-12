@@ -86,6 +86,12 @@ func NewCommand(name string, opts ...commandOption) *command {
 // The subcommand can be invoked by calling the parent command with the subcommand's name as an argument.
 func WithSubcommand(subc *command) commandOption {
 	return func(c *command) {
+		if _, ok := c.cs.get(subc.name); ok {
+			panic(fmt.Errorf(
+				"invalid command: subcommand with name '%s' is already defined on command '%s'",
+				subc.name, c.name,
+			))
+		}
 		c.cs.set(subc.name, subc)
 	}
 }
@@ -113,6 +119,7 @@ func WithFlags(flags ...*flag) commandOption {
 	return func(c *command) {
 		g := c.fg.new(groupDefault)
 		for _, f := range flags {
+			panicIfFlagAlreadyDefined(c, f)
 			c.fsl.set(f.name, f)
 			c.fss.set(f.short, f)
 			g.add(f)
@@ -124,6 +131,7 @@ func WithMutualExclusiveFlags(flags ...*flag) commandOption {
 	return func(c *command) {
 		g := c.fg.new(groupMutex)
 		for _, f := range flags {
+			panicIfFlagAlreadyDefined(c, f)
 			c.fsl.set(f.name, f)
 			c.fss.set(f.short, f)
 			g.add(f)
@@ -136,7 +144,7 @@ func WithMutualExclusiveFlags(flags ...*flag) commandOption {
 							names = append(names, ff.Name())
 						}
 						return fmt.Errorf(
-							"mutual exclusive flags: beside flags %s met '%s' flag", flags, f.Name(),
+							"invalid flags: flags %s are mutual exclusive flags", flags,
 						)
 					}
 					return nil
@@ -151,6 +159,7 @@ func WithAlwaysTogetherFlags(flags ...*flag) commandOption {
 	return func(c *command) {
 		g := c.fg.new(groupTogether)
 		for _, f := range flags {
+			panicIfFlagAlreadyDefined(c, f)
 			c.fsl.set(f.name, f)
 			c.fss.set(f.short, f)
 			g.add(f)
@@ -168,6 +177,7 @@ func WithAlwaysTogetherFlags(flags ...*flag) commandOption {
 func WithArguments(args ...*argument) commandOption {
 	return func(c *command) {
 		for _, arg := range args {
+			panicIfArgumentAlreadyDefined(c, arg)
 			c.as = append(c.as, arg)
 		}
 	}
@@ -357,4 +367,29 @@ func (c *command) help() bool {
 		return true
 	}
 	return false
+}
+
+func panicIfFlagAlreadyDefined(c *command, f *flag) {
+	if _, ok := c.fsl.get(f.name); ok {
+		panic(fmt.Errorf(
+			"invalid command: long flag '%s' is alredy defined for command '%s'",
+			f.name, c.name,
+		))
+	}
+
+	if _, ok := c.fss.get(f.short); ok {
+		panic(fmt.Errorf(
+			"invalid command: short flag '%s' is alredy defined for command '%s'",
+			f.short, c.name,
+		))
+	}
+}
+
+func panicIfArgumentAlreadyDefined(c *command, arg *argument) {
+	if v := c.as.get(arg.name); v != nil {
+		panic(fmt.Errorf(
+			"invalid command: argument '%s' is already defined for command '%s'",
+			arg.name, c.name,
+		))
+	}
 }
