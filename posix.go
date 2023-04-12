@@ -10,6 +10,19 @@ func (c *command) Usage() string {
 
 	s.WriteString(c.Name())
 
+	if len(c.cs) > 0 {
+		s.WriteString(" [")
+		var i int
+		for name := range c.cs {
+			s.WriteString(fmt.Sprintf(" %s", name))
+			if i < len(c.cs)-1 {
+				s.WriteString(" |")
+			}
+			i++
+		}
+		s.WriteString(" ]")
+	}
+
 	var (
 		defaultGroup  []*flag
 		mutexGroup    []*flag
