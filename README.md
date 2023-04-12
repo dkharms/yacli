@@ -36,19 +36,7 @@ Validation comes by default - you can take a break from arguments and flags val
 
 Verbose help message is already shipped.
 
-```bash
-echo [ -u | -l ] message amount
-Just prints <message> in format you specified
-
-Flags:
-    -h | --help [BOOL] - Print this message
-    -u | --uppercase [BOOL] - Print <message> in uppercase
-    -l | --lowercase [BOOL] - Print <message> in lowercase
-
-Arguments:
-    * message [STRING] - Message to print
-    * amount [INTEGER] - Print <message> `n` times
-```
+![Help Message](https://user-images.githubusercontent.com/29202384/231423462-2926f3af-3123-4c01-bdeb-5c1c1a792ece.png)
 
 ### How To Start
 
