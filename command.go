@@ -8,14 +8,31 @@ import (
 
 type commandOption func(*command)
 
+// Command represents a command definition which has a name,
+// a description, flags, arguments, and an action.
 type Command interface {
+	// Name returns the name of the command.
 	Name() string
+
+	// Description returns a brief description of the command.
 	Description() string
+
+	// Deprecated returns a boolean indicating whether or not the command is deprecated.
 	Deprecated() bool
+
+	// Subcommands returns a list of subcommands that are associated with this command.
 	Subcommands() []Command
+
+	// Flags returns a list of flags of command.
 	Flags() []Flag
+
+	// Arguments returns a list of arguments that were passed to command.
 	Arguments() []Argument
+
+	// Usage returns a string describing how the command should be used in POSIX format.
 	Usage() string
+
+	// Help returns a string containing a more detailed explanation of how to use the command.
 	Help() string
 }
 
@@ -39,8 +56,10 @@ type command struct {
 	// fsl is the flags associated with this command.
 	fsl flagset
 
+	// fss is the flags associated with this command.
 	fss flagset
 
+	// fg is the flag groups associated with this command.
 	fg flaggroup
 
 	// as is the arguments associated with this command.
@@ -59,6 +78,7 @@ func NewRootCommand(opts ...commandOption) *command {
 }
 
 // NewCommand creates a new command with the specified name and options.
+//
 // The command is initialized with an empty flagset and commandset.
 // It then applies the given options to the command.
 // Returns a pointer to the created command.
@@ -97,6 +117,7 @@ func WithSubcommand(subc *command) commandOption {
 }
 
 // WithCommandDescription sets the description for a command.
+//
 // The description is typically used for displaying help or usage information.
 // It should be a brief summary of what the command does.
 func WithCommandDescription(desc string) commandOption {
@@ -112,6 +133,7 @@ func WithCommandDeprecated(d bool) commandOption {
 }
 
 // WithFlags sets the provided flags as options for the command.
+//
 // This commandOption takes a variable number of flag pointers as input
 // and adds each flag to the command's flagset.
 // If a flag with the same name already exists in the flagset, it will be replaced.
@@ -127,6 +149,12 @@ func WithFlags(flags ...*flag) commandOption {
 	}
 }
 
+// WithMutualExclusiveFlags is a commandOption that creates a group
+// of flags that are mutually exclusive.
+
+// This function takes a variable number of flags as its arguments.
+// The flags passed to this function will be added to the group,
+// and an error will be thrown if more than one flag in the group is set.
 func WithMutualExclusiveFlags(flags ...*flag) commandOption {
 	return func(c *command) {
 		g := c.fg.new(groupMutex)
@@ -155,6 +183,12 @@ func WithMutualExclusiveFlags(flags ...*flag) commandOption {
 
 }
 
+// WithAlwaysTogetherFlags is a commandOption that creates a group
+// of flags that must always be set together.
+//
+// This function takes a variable number of flags as its arguments.
+// The flags passed to this function will be added to the group,
+// and an error will not be thrown even if one of the flags is not set.
 func WithAlwaysTogetherFlags(flags ...*flag) commandOption {
 	return func(c *command) {
 		g := c.fg.new(groupTogether)
@@ -174,6 +208,11 @@ func WithAlwaysTogetherFlags(flags ...*flag) commandOption {
 
 }
 
+// WithArguments is a commandOption that adds one or more arguments to a command object.
+//
+// This function takes a variable number of argument pointers as its arguments.
+// Each argument passed to this function will be added to the command object's argument slice.
+// If an argument with the same name has already been defined, an error will be thrown.
 func WithArguments(args ...*argument) commandOption {
 	return func(c *command) {
 		for _, arg := range args {
@@ -183,24 +222,31 @@ func WithArguments(args ...*argument) commandOption {
 	}
 }
 
+// WithAction is a commandOption that sets the action function for a command object.
+//
+// This function takes a single argument, a function that accepts a Context and returns an error.
 func WithAction(f func(Context) error) commandOption {
 	return func(c *command) {
 		c.action = f
 	}
 }
 
+// Name method returns the name of the command.
 func (c *command) Name() string {
 	return c.name
 }
 
+// Description method returns the description of the command.
 func (c *command) Description() string {
 	return c.description
 }
 
+// Deprecated method returns a boolean indicating whether the command is deprecated or not.
 func (c *command) Deprecated() bool {
 	return c.deprecated
 }
 
+// Subcommands method returns a slice of Command objects representing the subcommands of this command.
 func (c *command) Subcommands() []Command {
 	var subcommands []Command
 	for _, subcommand := range c.cs {
@@ -209,6 +255,7 @@ func (c *command) Subcommands() []Command {
 	return subcommands
 }
 
+// Flags method returns a slice of Flag objects representing the flags of this command.
 func (c *command) Flags() []Flag {
 	var flags []Flag
 	for _, flag := range c.fsl {
@@ -217,6 +264,7 @@ func (c *command) Flags() []Flag {
 	return flags
 }
 
+// Arguments method returns a slice of Argument objects representing the arguments of this command.
 func (c *command) Arguments() []Argument {
 	var arguments []Argument
 	for _, argument := range c.as {
@@ -225,6 +273,7 @@ func (c *command) Arguments() []Argument {
 	return arguments
 }
 
+// Help method returns a string representing the help information for the command.
 func (c *command) Help() string {
 	var s strings.Builder
 	if err := helpTemplate.Execute(&s, c); err != nil {
@@ -233,6 +282,7 @@ func (c *command) Help() string {
 	return s.String()
 }
 
+// The Run method is responsible for parsing the command line arguments and executing the command.
 func (c *command) Run() error {
 	p := newParser(os.Args[1:])
 
@@ -261,10 +311,6 @@ func (c *command) Run() error {
 	}
 
 	return currc.run(r)
-}
-
-func (c *command) prepare() error {
-	return nil
 }
 
 func (c *command) init(r repository) error {

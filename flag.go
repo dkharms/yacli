@@ -25,6 +25,7 @@ type flag struct {
 	cvalidators []func(f Flag) error
 }
 
+// NewFlag creates and returns a new Flag instance with the provided name, short name, description, and type.
 func NewFlag(name, short, description string, ttype ytype, opts ...flagOption) *flag {
 	f := &flag{
 		name:        name,
