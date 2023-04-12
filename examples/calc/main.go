@@ -8,14 +8,14 @@ import (
 )
 
 var root = yacli.NewRootCommand(
-	yacli.WithCommandDescription("Do some basic arithemtic operations"),
+	yacli.WithCommandDescription("Do some basic arithmetic operations"),
 	yacli.WithArguments(
 		yacli.NewArgument("x", "First operand in sum operation", yacli.Integer),
 		yacli.NewArgument("y", "Second operand in sum operation", yacli.Integer),
 	),
 	yacli.WithMutualExclusiveFlags(
-		yacli.NewFlag("sum", "s", "Do '+' arithemtic operation", yacli.Bool),
-		yacli.NewFlag("diff", "d", "Do '-' arithemtic operation", yacli.Bool),
+		yacli.NewFlag("sum", "s", "Do '+' arithmetic operation", yacli.Bool),
+		yacli.NewFlag("diff", "d", "Do '-' arithmetic operation", yacli.Bool),
 	),
 	yacli.WithAction(calc),
 
