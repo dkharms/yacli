@@ -7,7 +7,7 @@ import (
 )
 
 func newCommand() *command {
-	return NewCommand("echo",
+	return NewRootCommand(
 		WithFlags(
 			NewFlag("amount", "n", "…", Integer),
 		),
